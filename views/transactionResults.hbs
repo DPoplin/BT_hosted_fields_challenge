@@ -1,0 +1,20 @@
+<table class="table">
+  <tr>
+    <th>Transaction ID</th>
+    <th>Amount</th>
+    <th>Currency</th>
+    <th>Date Created</th>
+  </tr>
+  {{#each transactions}}
+  <tr>
+    <td>{{id}}</td>
+    <td>{{amount}}</td>
+    <td>{{currency}}</td>
+    <td>{{date}}</td>
+  </tr>
+  {{/each}}
+<tr>
+  <td>Total</td>
+  <td>{{transactionTotal}}</td>
+</tr>
+</table>
