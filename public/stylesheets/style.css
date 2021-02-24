@@ -1,0 +1,71 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #7a7a7a;
+  text-align: center;
+  color: #d9e4dd;
+}
+
+a {
+  color: #00572e;
+  text-decoration: underline;
+  text-decoration-color: #262626;
+}
+
+td {
+  color: #262626;
+}
+
+p {
+  font-size: 16px;
+}
+
+div {
+  height: 50px;
+  width: 200px;
+  margin: auto;
+}
+
+ul {
+  align-items: center;
+}
+
+li {
+  display: inline;
+}
+
+table {
+  text-align: center;
+  margin: 20px 0 0 0;
+}
+
+.input {
+  border: 1px solid #555555;
+  -webkit-transition: border-color 160ms;
+  transition: border-color 160ms;
+  background-color: #cdc9c3;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.btn {
+  padding: 10px 20px;
+  margin: 10px;
+}
+
+.input.braintree-hosted-fields-focused {
+  border-color: blue;
+}
+
+.failure {
+  color: #73030f;
+}
+
+.success {
+  color: #00331b;
+}
+
+#checkout-message {
+  width: auto;
+  height: 100px;
+}

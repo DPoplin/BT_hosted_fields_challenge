@@ -1,0 +1,126 @@
+<div id="checkout-message"></div>
+
+<form action="/checkout" id="hosted-fields-form" method="post">
+  <div class="col-sm">
+
+    <label for="card-number">Card Number</label>
+    <div class="input" id="card-number"></div>
+
+    <label for="cvv">CVV</label>
+    <div class="input" id="cvv"></div>
+
+    <label for="expiration-date">Expiration Date</label>
+    <div class="input" id="expiration-date"></div>
+
+    <label for="postal-code">Postal Code</label>
+    <div class="input" id="postal-code"></div>
+
+    <input class="btn btn-dark" type="submit" value="Pay Now" disabled />
+  </div>
+</form>
+
+
+<script>
+  var form = document.querySelector('#hosted-fields-form');
+  var submit = document.querySelector('input[type="submit"]');
+
+  const clientToken = '{{{clientToken}}}'
+
+
+  braintree.client.create({
+    authorization: clientToken
+  }, function(clientErr, clientInstance) {
+    if (clientErr) {
+      console.error(clientErr);
+      return;
+    }
+
+    // Create a hostedFields component
+    braintree.hostedFields.create({
+      client: clientInstance,
+      fields: {
+        number: {
+          selector: '#card-number',
+          placeholder: '4111 1111 1111 1111'
+        },
+        cvv: {
+          selector: '#cvv',
+          placeholder: '123'
+        },
+        expirationDate: {
+          selector: '#expiration-date',
+          placeholder: '10/2022'
+        },
+        postalCode: {
+          selector: '#postal-code',
+          placeholder: '11111'
+        }
+      },
+      styles: {
+        'input': {
+          'font-size': '14px'
+        },
+        'input.invalid': {
+          'color': 'red'
+        },
+        'input.valid': {
+          'color': 'green'
+        }
+      }
+    }, function(hostedFieldsErr, instance) {
+      if (hostedFieldsErr) {
+        console.error(hostedFieldsErr);
+        return;
+      }
+
+      // Once the fields are initialized enable the submit button
+      submit.removeAttribute('disabled');
+
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        instance.tokenize(function(tokenizeErr, payload) {
+          if (tokenizeErr) {
+            console.error(tokenizeErr);
+            return;
+          }
+          console.log(payload);
+
+          $.ajax({
+            type: 'POST',
+            url: '/checkout',
+            data: {
+              'paymentMethodNonce': payload.nonce
+            }
+          }).done(function(result) {
+            var success = result.success;
+
+
+            if (success) {
+              $('#checkout-message').html(
+                '<h3><i class="fas fa-check-circle"></i> Success</h3><p>Your transaction was successful! Check the <a href="../transactions">transaction page</a> to view your test transactions.</p><p>Refresh to try another transaction.</p>'
+              ).addClass("success");
+              var transactionId = result.transaction.id;
+              var transactionStatus = result.transaction.status;
+              var amount = result.transaction.amount;
+              console.log(result);
+
+              // Tear down the Hosted Fields form
+              instance.teardown(function(teardownErr) {
+                if (teardownErr) {
+                  console.error('Could not tear down the Hosted Fields form!');
+                } else {
+                  console.info('Hosted Fields form has been torn down!');
+                }
+
+                $('#hosted-fields-form').remove();
+              });
+
+            } else {
+              $('#checkout-message').html('<h3><i class="fas fa-times-circle"></i> Oops</h3><p>Something went wrong. Please try your payment again.</p>').addClass("failure");
+            }
+          });
+        });
+      }, false);
+    });
+  });
+</script>
